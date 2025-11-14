@@ -19,19 +19,29 @@ public class ConnectTest {
   private WebDriver driver;
   private Map<String, Object> vars;
   JavascriptExecutor js;
+  
   @Before
   public void setUp() {
     ChromeOptions options = new ChromeOptions();
-    options.addArguments("--headless");
+    // FIX: Add these essential arguments for GitHub Actions
+    options.addArguments("--headless=new");           // Use new headless mode
+    options.addArguments("--no-sandbox");             // Required in CI
+    options.addArguments("--disable-dev-shm-usage");  // Prevents memory issues
+    options.addArguments("--disable-gpu");            // GPU not available in CI
+    options.addArguments("--window-size=1920,1080");
+    options.addArguments("--remote-allow-origins=*");
+    
+    // FIX: Only create ONE driver instance
     driver = new ChromeDriver(options);
-    driver = new ChromeDriver();
     js = (JavascriptExecutor) driver;
     vars = new HashMap<String, Object>();
   }
+  
   @After
   public void tearDown() {
     driver.quit();
   }
+  
   @Test
   public void testConnection() {
     // Test that the webserver is ready to service an HTTP request
